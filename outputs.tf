@@ -12,3 +12,8 @@ output "eni_id" {
 output "fck_nat_instance_id" {
   value = aws_instance.fck_nat_instance.id
 }
+
+# Security group created by this module
+output "security_group_id" {
+  value = var.create_security_group ? aws_security_group.fck_nat_sg[0].id : null
+}

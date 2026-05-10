@@ -1,10 +1,10 @@
 variable "name" {
-  type = string
+  type        = string
   description = "Name of the FCK NAT instance"
 }
 
 variable "az_index" {
-  type = number
+  type        = number
   description = "Index of the availability zone for the FCK NAT instance, used for naming and subnet selection"
 }
 
@@ -13,18 +13,18 @@ variable "vpc_id" {
 }
 
 variable "architecture" {
-  type = string
+  type    = string
   default = "x86_64"
 }
 
 variable "instance_type" {
-  type    = string
+  type        = string
   description = "Instance type for the FCK NAT instance"
-  default = "t4g.nano"
+  default     = "t4g.nano"
 }
 
 variable "public_subnet_id" {
-  type = string
+  type        = string
   description = "Public subnet ID for the FCK NAT instance"
 }
 
@@ -33,18 +33,19 @@ variable "vpc_cidr_block" {
 }
 
 variable "key_name" {
-  type = string
+  type        = string
+  default     = ""
   description = "Key pair name for SSH access to the FCK NAT instance"
 }
 
 variable "create_eip" {
-  type = bool
-  default = true
+  type        = bool
+  default     = true
   description = "Check for elastic ip create or not"
 }
 
 variable "eip_allocation_id" {
-  type = string
+  type        = string
   description = "EIP allocation ID for the FCK NAT instance"
 }
 
@@ -54,4 +55,18 @@ variable "sg_ingress_rules" {
     protocol    = string
     cidr_blocks = list(string)
   }))
+  default     = []
+  description = "List of ingress rules for the security group associated with the FCK NAT instance"
+}
+
+variable "create_security_group" {
+  type        = bool
+  default     = true
+  description = "Whether to create a security group for the FCK NAT instance."
+}
+
+variable "security_group_ids" {
+  type        = list(string)
+  default     = []
+  description = "Existing security group IDs to attach to the FCK NAT instance when create_security_group is false."
 }

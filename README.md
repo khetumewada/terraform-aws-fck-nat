@@ -1,66 +1,64 @@
 # FCK NAT Terraform Module
 
+Terraform module for creating a FCK NAT EC2 instance on AWS.
+
+---
+
 ## Features
-- Creates NAT EC2 instance
-- Creates Security Group
-- Optional EIP creation
-- Supports external EIP
 
-## Usage
-if you want to create a new EIP for NAT instance inside the module.
+- Creates a FCK NAT EC2 instance with `source_dest_check` disabled
+- Automatically finds the latest FCK NAT AMI
+- Optional Elastic IP creation or attachment of an existing EIP
+- Optionally creates a security group inside the module
+- Supports passing existing security group IDs from outside the module
+- Supports custom ingress rules when creating the security group inside the module
+- Outputs public IP, ENI ID, EC2 instance ID, and created security group ID
 
-      module "fck_nat" {
-      source = "git::https://github.com/khetumewada/terraform-aws-fck-nat.git?ref=v1.0.0"
-        
-      for_each = var.environment != "prod" ? {
-        for index in range(var.az_count) : index => index
-        } : {}
+---
 
-      az_index         = each.value
-      name              = "fck-nat"
-      vpc_id            = "vpc-xxxx"
-      public_subnet_id  = "subnet-xxxx"
-      key_name          = "my-key"
-      architecture      = "amd64" or "x86_64"
-      instance_type     = "xxx" ex-"t4g.nano"
+## Elastic IP Usage
 
-      create_eip        = true
-    
-      sg_ingress_rules = [
-        {
-          port        = 22
-          protocol    = "tcp"
-          cidr_blocks = ["0.0.0.0/0"]
-        }
-      ]
-    }
+The module supports two EIP strategies:
 
-### Usage
-if you want to pass the existing EIP allocation id to the NAT instance
+| Variable | Behavior |
+|---|---|
+| `create_eip = true` | Allocates and associates a new Elastic IP |
+| `create_eip = false` | Associates an existing Elastic IP using `eip_allocation_id` |
 
-      module "fck_nat" {
-      source = "https://github.com/khetumewada/terraform-aws-fck-nat?ref=v1.0.0"
-    
-      for_each = var.environment != "prod" ? {
-        for index in range(var.az_count) : index => index
-        } : {}
+### When `create_eip = true`
 
-      az_index         = each.value
-      name              = "fck-nat"
-      vpc_id            = "vpc-xxxx"
-      public_subnet_id  = "subnet-xxxx"
-      key_name          = "my-key"
-      architecture      = "amd64" or "x86_64"
-      instance_type     = "xxx" ex-"t4g.nano"
+Resources created:
 
-      create_eip        = false
-      eip_allocation_id = "eipalloc-xxxx"
+| Resource | Count |
+|---|---|
+| EC2 Instance | 1 |
+| Elastic IP | 1 |
+| EIP Association | 1 |
 
-      sg_ingress_rules = [
-        {
-          port        = 22
-          protocol    = "tcp"
-          cidr_blocks = ["0.0.0.0/0"]
-        }
-      ]
-    }
+### When `create_eip = false`
+
+Resources created:
+
+| Resource | Count |
+|---|---|
+| EC2 Instance | 1 |
+| EIP Association | 1 |
+
+> **Note:** `eip_allocation_id` is required when `create_eip = false`.
+
+---
+
+## Security Group Usage
+
+The module supports two security group options:
+
+| Variable | Behavior |
+|---|---|
+| `create_security_group = true` | Creates a security group inside the module |
+| `create_security_group = false` | Uses existing security group IDs passed with `security_group_ids` |
+
+### Create Security Group Inside Module
+
+When `create_security_group = true`, the module creates a security group and attaches it to the FCK NAT instance.
+
+Ingress rules can be passed using `sg_ingress_rules`.

@@ -1,6 +1,6 @@
 data "aws_ami" "fck_nat_ami" {
   most_recent = true
-  owners = ["568608671756"]
+  owners      = ["568608671756"]
   filter {
     name   = "name"
     values = ["fck-nat-al2023-*"]
@@ -18,12 +18,12 @@ resource "aws_eip" "elastic_ip" {
   }
 }
 
-resource "aws_eip_association" "fck_nat_eip_asso"{
+resource "aws_eip_association" "fck_nat_eip_asso" {
   allocation_id = var.create_eip ? aws_eip.elastic_ip[0].id : var.eip_allocation_id
   instance_id   = aws_instance.fck_nat_instance.id
   depends_on = [
     aws_instance.fck_nat_instance
-   ]
+  ]
 }
 
 resource "aws_instance" "fck_nat_instance" {
@@ -32,7 +32,7 @@ resource "aws_instance" "fck_nat_instance" {
   subnet_id     = var.public_subnet_id
   key_name      = var.key_name != "" ? var.key_name : null
 
-  vpc_security_group_ids = [aws_security_group.fck_nat_sg.id]
+  vpc_security_group_ids = var.create_security_group ? [aws_security_group.fck_nat_sg[0].id] : var.security_group_ids
 
   source_dest_check = false
 
