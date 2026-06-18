@@ -1,0 +1,34 @@
+name: terraform
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+  pull_request:
+    paths:
+      - .github/workflows/terraform.yml
+      - '**/*.tf'
+      - '**/.terraform.*'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Verify Workflow Execution
+        run: |
+          echo "GitHub Action is running successfully"
+          terraform version
+
+      - name: Run Checks
+        run: make check
