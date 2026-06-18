@@ -27,7 +27,7 @@ resource "aws_eip_association" "fck_nat_eip_asso" {
 }
 
 resource "aws_instance" "fck_nat_instance" {
-  ami           = data.aws_ami.fck_nat_ami.id
+  ami           = var.ami != "" ? var.ami : data.aws_ami.fck_nat_ami.id
   instance_type = var.instance_type
   subnet_id     = var.public_subnet_id
   key_name      = var.key_name != "" ? var.key_name : null

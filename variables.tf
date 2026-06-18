@@ -3,6 +3,12 @@ variable "name" {
   description = "Name of the FCK NAT instance"
 }
 
+variable "ami"{
+  type        = string
+  default     = ""
+  description = "AMI ID for the FCK NAT instance (if not provided, the module will search for the latest compatible AMI)"
+}
+
 variable "az_index" {
   type        = number
   description = "Index of the availability zone for the FCK NAT instance, used for naming and subnet selection"
